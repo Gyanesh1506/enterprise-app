@@ -20,7 +20,11 @@ pipeline {
         stage('Build and Unit Tests') {
             steps {
                 echo 'Building application and running unit tests'
+
                 sh './mvnw -B clean verify'
+
+                stash name: 'app-jar',
+                      includes: 'target/enterprise-app-0.0.1-SNAPSHOT.jar'
             }
             post {
                 always {
@@ -58,6 +62,8 @@ pipeline {
             steps {
                 echo 'Building Docker image on dedicated Docker Agent'
 
+                unstash 'app-jar'
+
                 sh 'docker build -t gyan1506/enterprise-app:${BUILD_NUMBER} .'
 
                 sh 'docker images gyan1506/enterprise-app:${BUILD_NUMBER}'
@@ -88,6 +94,7 @@ pipeline {
         success {
             echo 'CI Pipeline completed successfully!'
         }
+
         failure {
             echo 'CI Pipeline failed. Check the failed stage.'
         }
