@@ -51,13 +51,16 @@ pipeline {
             }
         }
 
-        stage('Docker Agent Verification') {
+        stage('Docker Build') {
             agent {
                 label 'docker-agent'
             }
             steps {
-                echo 'Running on dedicated Docker Agent'
-                sh 'docker version'
+                echo 'Building Docker image on dedicated Docker Agent'
+
+                sh 'docker build -t gyan1506/enterprise-app:${BUILD_NUMBER} .'
+
+                sh 'docker images gyan1506/enterprise-app:${BUILD_NUMBER}'
             }
         }
     }
