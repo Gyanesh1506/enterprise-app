@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -75,12 +74,13 @@ pipeline {
                 label 'docker-agent'
             }
             steps {
-                echo 'Scanning Docker image for HIGH and CRITICAL vulnerabilities'
+                echo 'Scanning Docker image with Trivy'
 
                 sh '''
                     docker run --rm \
                         -v /var/run/docker.sock:/var/run/docker.sock \
                         aquasec/trivy:latest image \
+                        --timeout 20m \
                         --scanners vuln \
                         --severity HIGH,CRITICAL \
                         --exit-code 0 \
