@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -35,7 +36,8 @@ pipeline {
                     sh '''
                         ./mvnw -B org.sonarsource.scanner.maven:sonar-maven-plugin:5.9.0.7382:sonar \
                         -Dsonar.projectKey=enterprise-app \
-                        -Dsonar.projectName="Enterprise Employee App"
+                        -Dsonar.projectName="Enterprise Employee App" \
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                     '''
                 }
             }
