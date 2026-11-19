@@ -50,6 +50,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Agent Verification') {
+            agent {
+                label 'docker-agent'
+            }
+            steps {
+                echo 'Running on dedicated Docker Agent'
+                sh 'docker version'
+            }
+        }
     }
 
     post {
