@@ -63,6 +63,25 @@ pipeline {
                 sh 'docker images gyan1506/enterprise-app:${BUILD_NUMBER}'
             }
         }
+
+        stage('Trivy Security Scan') {
+            agent {
+                label 'docker-agent'
+            }
+            steps {
+                echo 'Scanning Docker image for HIGH and CRITICAL vulnerabilities'
+
+                sh '''
+                    docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        aquasec/trivy:latest image \
+                        --scanners vuln \
+                        --severity HIGH,CRITICAL \
+                        --exit-code 0 \
+                        gyan1506/enterprise-app:${BUILD_NUMBER}
+                '''
+            }
+        }
     }
 
     post {
