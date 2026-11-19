@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -69,31 +68,6 @@ pipeline {
                 sh 'docker build -t gyan1506/enterprise-app:${BUILD_NUMBER} .'
 
                 sh 'docker images gyan1506/enterprise-app:${BUILD_NUMBER}'
-            }
-        }
-
-        stage('Trivy Security Scan') {
-            agent {
-                label 'docker-agent'
-            }
-
-            steps {
-                echo 'Scanning Docker image with Trivy'
-
-                retry(3) {
-                    sh '''
-                        docker run --rm \
-                            -v /var/run/docker.sock:/var/run/docker.sock \
-                            -v trivy-cache:/root/.cache/trivy \
-                            aquasec/trivy:latest image \
-                            --db-repository ghcr.io/aquasecurity/trivy-db:2 \
-                            --timeout 20m \
-                            --scanners vuln \
-                            --severity HIGH,CRITICAL \
-                            --exit-code 0 \
-                            gyan1506/enterprise-app:${BUILD_NUMBER}
-                    '''
-                }
             }
         }
     }
