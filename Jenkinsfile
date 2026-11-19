@@ -33,7 +33,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh '''
-                        ./mvnw -B sonar:sonar \
+                        ./mvnw -B org.sonarsource.scanner.maven:sonar-maven-plugin:5.9.0.7382:sonar \
                         -Dsonar.projectKey=enterprise-app \
                         -Dsonar.projectName="Enterprise Employee App"
                     '''
