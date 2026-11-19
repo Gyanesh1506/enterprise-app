@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -25,6 +26,7 @@ pipeline {
                 stash name: 'app-jar',
                       includes: 'target/enterprise-app-0.0.1-SNAPSHOT.jar'
             }
+
             post {
                 always {
                     junit testResults: 'target/surefire-reports/*.xml',
@@ -58,6 +60,7 @@ pipeline {
             agent {
                 label 'docker-agent'
             }
+
             steps {
                 echo 'Building Docker image on dedicated Docker Agent'
 
@@ -73,19 +76,24 @@ pipeline {
             agent {
                 label 'docker-agent'
             }
+
             steps {
                 echo 'Scanning Docker image with Trivy'
 
-                sh '''
-                    docker run --rm \
-                        -v /var/run/docker.sock:/var/run/docker.sock \
-                        aquasec/trivy:latest image \
-                        --timeout 20m \
-                        --scanners vuln \
-                        --severity HIGH,CRITICAL \
-                        --exit-code 0 \
-                        gyan1506/enterprise-app:${BUILD_NUMBER}
-                '''
+                retry(3) {
+                    sh '''
+                        docker run --rm \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
+                            -v trivy-cache:/root/.cache/trivy \
+                            aquasec/trivy:latest image \
+                            --db-repository ghcr.io/aquasecurity/trivy-db:2 \
+                            --timeout 20m \
+                            --scanners vuln \
+                            --severity HIGH,CRITICAL \
+                            --exit-code 0 \
+                            gyan1506/enterprise-app:${BUILD_NUMBER}
+                    '''
+                }
             }
         }
     }
