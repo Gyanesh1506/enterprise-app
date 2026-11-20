@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: enterprise-app
-          image: gyan1506/enterprise-app:1.0
+          image: gyan1506/enterprise-app:19
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
