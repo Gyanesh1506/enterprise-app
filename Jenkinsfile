@@ -70,6 +70,30 @@ pipeline {
                 sh 'docker images gyan1506/enterprise-app:${BUILD_NUMBER}'
             }
         }
+
+        stage('Docker Push') {
+            agent {
+                label 'docker-agent'
+            }
+
+            steps {
+                echo 'Pushing Docker image to Docker Hub'
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USERNAME',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+                        docker push gyan1506/enterprise-app:${BUILD_NUMBER}
+
+                        docker logout
+                    '''
+                }
+            }
+        }
     }
 
     post {
